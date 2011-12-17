@@ -26,10 +26,10 @@ def execute_query(query, params = []):
 def index():
     try:
         if not session['waiting']:
-            return render_template('addTicket.html')
+            return render_template('addTicket.html', tickets=get_tickets())
     except KeyError:
-        return render_template('addTicket.html')
-    return render_template('queue.html')
+        return render_template('addTicket.html', tickets=get_tickets())
+    return render_template('queue.html', tickets=get_tickets())
 
 @app.route('/add', methods=['POST'])
 def add():

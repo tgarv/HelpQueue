@@ -1,1 +1,24 @@
-Hi
+<!doctype html>
+<head>
+	<link rel="stylesheet" type="text/css" href="{{url_for('static', filename='style.css')}}"/>
+	<script type="text/javascript" src="{{url_for('static', filename='scripts/jquery.js')}}"></script>
+	<script type="text/javascript" src="{{url_for('static', filename='scripts/jquery-ui.js')}}"></script>
+	<script type="text/javascript" src="{{url_for('static', filename='scripts/scripts.js')}}"></script>
+	<title>Help Queue</title>
+	<script type=text/javascript>
+		$SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+	</script>
+</head>
+
+<body>
+
+	<div id="displayTicketsDiv">
+		<ul id="displayTicketsList">
+			{% for ticket in tickets %}
+				<li id="ticket">{{ticket[5]}}</li>
+			{% else %}
+			<li>Nobody is on the queue!</li>
+			{% endfor %}
+		</ul>
+	</div>
+</body>
