@@ -14,14 +14,14 @@
 	<div id="displayTicketsDiv">
 		<ul id="displayTicketsList">
 			{% for ticket in tickets %}
-				<li id="ticket">ticket[3]</li>
+				<li id="ticket">{{ticket[3]}}</li>
 			{% else %}
 			<li>Nobody is on the queue!</li>
 			{% endfor %}
 		</ul>
 	</div>
 	<div id="addTicketDiv">
-		<form id="addTicketForm" action="add" method="post">
+		<form id="addTicketForm" action="addTicket" method="post">
 			<dl>
 				<dt>Name:
 				<dd><input type="text" name="name">
