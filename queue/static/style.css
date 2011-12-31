@@ -1,0 +1,8 @@
+body {
+
+}
+
+#logout:hover {
+	cursor: pointer;
+	color: red;
+}

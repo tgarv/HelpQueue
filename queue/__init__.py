@@ -22,10 +22,14 @@ def index():
             return render_template('login.html')
         else:
             if not waiting_for_ticket():
-                return render_template('addTicket.html', tickets=get_tickets())
+                return render_template('addTicket.html', tickets=get_tickets(),
+                                       name=session['name'],
+                                       studentID=session['studentID'])
             else:
                 print str(session)
-                return render_template('queue.html', tickets=get_tickets())
+                return render_template('queue.html', tickets=get_tickets(),
+                                       name=session['name'],
+                                       studentID=session['studentID'])
     ##Exception caught if session['logged_in'] not defined
     except KeyError:
         return render_template('login.html')
@@ -36,10 +40,13 @@ def login():
     location = request.form['location']
     return do_login(name, location)
 
-@app.route('/addTicket', methods=['POST'])
+@app.route('/logout', methods=['GET', 'POST'])
+def logout():
+    return do_logout()
+
+@app.route('/addTicket', methods=['GET', 'POST'])
 def addTicket():
-    print "here"
-    student = request.form['name']
+    student = session['studentID']
     queueLocation = get_queue_location(QUEUE_ID)
     description = request.form['description']
     status = 'waiting'
@@ -48,7 +55,13 @@ studentID) values (%s, %s, %s, %s, %s)"
     execute_query(query, [QUEUE_ID, queueLocation, description,
                           status, student])
     session['waiting'] = True
-    return render_template('queue.html')
+    return render_template('queue.html', tickets=get_tickets(),
+                           name=session['name'], studentID=session['studentID'])
+
+@app.route('/removeTicket', methods=['POST'])
+def removeTicket():
+    ticketID = request.form['ticketID']
+    return do_remove_ticket(ticketID)
 
 @app.route('/admin')
 def admin():
@@ -67,9 +80,8 @@ def execute_query_insert(query, table, params = []):
     cur = con.cursor()
     cur.execute(query, params)
     con.commit()
-    foo = "select last_insert_id() from " + str(table)
-    print foo
-    cur.execute(foo)
+    query = "select last_insert_id() from " + str(table)
+    cur.execute(query)
     ID = cur.fetchone()[0]
     return ID
 
@@ -83,7 +95,7 @@ def get_tickets():
     return execute_query(query, [QUEUE_ID])
 
 def waiting_for_ticket():
-    return False
+    return session['waiting']
 
 def do_login(name, location):
     query = "insert into students (queueID, name, location) values (%s, %s, %s)"
@@ -92,3 +104,16 @@ def do_login(name, location):
     session['studentID'] = studentID
     session['logged_in'] = True
     return redirect(url_for('index'))
+
+def do_logout():
+    session['logged_in'] = False
+    session['name'] = None
+    session['studentID'] = None
+    session['waiting'] = False
+    return redirect(url_for('index'))
+
+def do_remove_ticket(ticketID):
+    query = "delete from tickets where ticketID=%s"
+    execute_query(query, [ticketID])
+    session['waiting'] = False
+    return "Ticket Deleted"

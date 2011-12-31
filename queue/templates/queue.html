@@ -11,11 +11,17 @@
 </head>
 
 <body>
+	<div id="headerDiv">
+		<div id="navBarDiv">
+			<h3 class="nameHeader" id="{{studentID}}">Welcome {{name}}</h3>
+			<h3 id="logout">Not {{name}}? Click here.</h3>
+		</div>
+	</div>
 
 	<div id="displayTicketsDiv">
 		<ul id="displayTicketsList">
 			{% for ticket in tickets %}
-				<li id="ticket">{{ticket[0:7]}}</li>
+				<li id="{{ticket[0]}}" class="ticket{{ticket[5]}}">{{ticket[0:7]}}</li>
 			{% else %}
 			<li>Nobody is on the queue!</li>
 			{% endfor %}
