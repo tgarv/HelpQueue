@@ -1,6 +1,7 @@
 from flask import Flask, request, session, g, redirect, url_for, \
      abort, render_template, flash
 import MySQLdb as mdb
+import sys, traceback
 
 #configuration
 DEBUG = True
@@ -22,29 +23,38 @@ def index():
             return render_template('login.html')
         else:
             if not waiting_for_ticket():
-                return render_template('addTicket.html', tickets=get_tickets(),
+                return render_template('newTicket.html', tickets=get_tickets(),
                                        name=session['name'],
-                                       studentID=session['studentID'])
+                                       studentID=session['studentID'],
+                                       queue=get_queue_title())
             else:
                 print str(session)
                 return render_template('queue.html', tickets=get_tickets(),
                                        name=session['name'],
-                                       studentID=session['studentID'])
+                                       studentID=session['studentID'],
+                                       queue=get_queue_title())
     ##Exception caught if session['logged_in'] not defined
-    except KeyError:
+    except KeyError as e:
+        print "Error: ", e
+        traceback.print_exc(file=sys.stdout)
         return render_template('login.html')
 
 @app.route('/login', methods=['GET','POST'])
 def login():
     name = request.form['name']
     location = request.form['location']
+    print session
     return do_login(name, location)
 
 @app.route('/logout', methods=['GET', 'POST'])
 def logout():
     return do_logout()
 
-@app.route('/addTicket', methods=['GET', 'POST'])
+@app.route('/adminLogout', methods=['GET', 'POST'])
+def adminLogout():
+    return do_admin_logout()
+
+@app.route('/addTicket', methods=['GET','POST'])
 def addTicket():
     student = session['studentID']
     queueLocation = get_queue_location(QUEUE_ID)
@@ -55,8 +65,9 @@ studentID) values (%s, %s, %s, %s, %s)"
     execute_query(query, [QUEUE_ID, queueLocation, description,
                           status, student])
     session['waiting'] = True
-    return render_template('queue.html', tickets=get_tickets(),
-                           name=session['name'], studentID=session['studentID'])
+    return redirect(url_for('index'))
+##    return render_template('queue.html', tickets=get_tickets(),
+##                           name=session['name'], studentID=session['studentID'])
 
 @app.route('/removeTicket', methods=['POST'])
 def removeTicket():
@@ -65,7 +76,28 @@ def removeTicket():
 
 @app.route('/admin')
 def admin():
-    return render_template('admin.html', tickets=get_tickets())
+    try:
+        if not session['admin_logged_in']:
+            return render_template('adminLogin.html')
+        else:
+            if not helping_ticket():
+                return render_template('adminQueue.html', tickets=get_tickets(),
+                                       queue=get_queue_title(), name=session['name'])
+            else:
+                return render_template('adminTicket.html', tickets=get_tickets(),
+                                       queue=get_queue_title(), name=session['name'])
+    ##Exception caught if session['admin_logged_in'] not defined
+    except KeyError as e:
+        print "Error: ", e
+        traceback.print_exc(file=sys.stdout)
+        return render_template('adminLogin.html')
+
+@app.route('/adminLogin', methods=['POST'])
+def adminLogin():
+    name = request.form['name']
+    password = request.form['password']
+    location = request.form['location']
+    return do_admin_login(name, password, location)
 
 def execute_query(query, params = []):
     con = mdb.connect(SQL_SERVER, USERNAME, PASSWORD, DATABASE)
@@ -74,6 +106,11 @@ def execute_query(query, params = []):
     rows = cur.fetchall()
     con.commit()
     return rows
+
+def get_queue_title():
+    query = "select description from queues where queueID=%s"
+    rows = execute_query(query, [QUEUE_ID])
+    return rows[0][0]
 
 def execute_query_insert(query, table, params = []):
     con = mdb.connect(SQL_SERVER, USERNAME, PASSWORD, DATABASE)
@@ -86,13 +123,20 @@ def execute_query_insert(query, table, params = []):
     return ID
 
 def get_queue_location(queueID):
-    query = "select ticketID from tickets where queueID = %s"
+    query = "select max(queueLocation) from tickets where queueID = %s"
     rows = execute_query(query, [queueID])
-    return len(rows)
+    location = rows[0][0]
+    if location!=None:
+        return location + 1
+    return 0
 
 def get_tickets():
     query = "select * from tickets where queueID = %s"
-    return execute_query(query, [QUEUE_ID])
+    rows = execute_query(query, [QUEUE_ID])
+    print get_student_name_from_id(31)
+    return [dict(ticketID=row[0], studentID=row[5],
+                 name=get_student_name_from_id(row[5])) for row in rows]
+    
 
 def waiting_for_ticket():
     return session['waiting']
@@ -103,6 +147,7 @@ def do_login(name, location):
     session['name'] = name
     session['studentID'] = studentID
     session['logged_in'] = True
+    session['waiting'] = False
     return redirect(url_for('index'))
 
 def do_logout():
@@ -117,3 +162,33 @@ def do_remove_ticket(ticketID):
     execute_query(query, [ticketID])
     session['waiting'] = False
     return "Ticket Deleted"
+
+def get_student_name_from_id(studentID):
+    query = "select name from students where studentID=%s"
+    row = execute_query(query, [studentID])
+    return row[0][0]
+
+def do_admin_login(name, password, location):
+    query = "select password from queues where queueID=%s"
+    rows = execute_query(query, [QUEUE_ID])
+    correct_password = rows[0][0]
+    if correct_password != password:
+        return "Incorrect password"
+    query = "insert into teachers (queueID, name, location) values \
+(%s, %s, %s)"
+    adminID = execute_query_insert(query, "teachers", [QUEUE_ID, name, location])
+    session['adminID'] = adminID
+    session['admin_logged_in'] = True
+    session['name'] = name
+    session['helping_ticket'] = False
+    return redirect(url_for('admin'))
+
+def do_admin_logout():
+    session['admin_logged_in'] = False
+    session['name'] = None
+    session['adminID'] = None
+    session['helping_ticket'] = False
+    return redirect(url_for('admin'))
+
+def helping_ticket():
+    return session['helping_ticket']

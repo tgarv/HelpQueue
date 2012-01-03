@@ -4,27 +4,24 @@
 	<script type="text/javascript" src="{{url_for('static', filename='scripts/jquery.js')}}"></script>
 	<script type="text/javascript" src="{{url_for('static', filename='scripts/jquery-ui.js')}}"></script>
 	<script type="text/javascript" src="{{url_for('static', filename='scripts/scripts.js')}}"></script>
-	<title>{{queue}}</title>
+	<title>Help Queue</title>
 	<script type=text/javascript>
 		$SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
 	</script>
 </head>
 
 <body>
-	<div id="headerDiv">
-		<div id="navBarDiv">
-			<h3 class="nameHeader" id="{{studentID}}">Welcome {{name}}</h3>
-			<h3 id="logout">Not <em>{{name}}</em>? Click here.</h3>
-		</div>
-	</div>
-
-	<div id="displayTicketsDiv">
-		<ul id="displayTicketsList">
-			{% for ticket in tickets %}
-				<li id="{{ticket.ticketID}}" class="ticket{{ticket.studentID}}">{{ticket.name}}</li>
-			{% else %}
-			<li>Nobody is on the queue!</li>
-			{% endfor %}
-		</ul>
+	<div id="adminLoginDiv">
+		<form id="adminLoginForm" action="adminLogin" method="post">
+			<div>Log in to help people on the queue.</div>
+			<dl>
+				<dt>Name:
+				<dd><input type="text" name="name">
+				<dt>Location:
+				<dd><input type="text" name="location">
+				<dt>Password:
+				<dd><input type="password" name="password">
+				<input type="submit" value="submit">
+		</form>
 	</div>
 </body>

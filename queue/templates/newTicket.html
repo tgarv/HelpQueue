@@ -13,12 +13,12 @@
 <body>
 	<div id="headerDiv">
 		<div id="navBarDiv">
-			<h3 class="nameHeader" id="{{studentID}}">Welcome {{name}}</h3>
-			<h3 id="logout">Not <em>{{name}}</em>? Click here.</h3>
+			<h3 class="nameHeader" id="{{studentID}}">Welcome, {{name}}</h3>
+			<h4 id="logout">Not <b>{{name}}</b>? Click here.</h4>
 		</div>
 	</div>
-
 	<div id="displayTicketsDiv">
+		<h3>Queue</h3>
 		<ul id="displayTicketsList">
 			{% for ticket in tickets %}
 				<li id="{{ticket.ticketID}}" class="ticket{{ticket.studentID}}">{{ticket.name}}</li>
@@ -26,5 +26,13 @@
 			<li>Nobody is on the queue!</li>
 			{% endfor %}
 		</ul>
+	</div>
+	<div id="addTicketDiv">
+		<form id="addTicketForm" action="addTicket" method="post">
+			<dl>
+				<dt>Description of Problem:
+				<dd><input type="text" name="description">
+				<input type="submit" value="Join Queue">
+		</form>
 	</div>
 </body>

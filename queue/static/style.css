@@ -2,7 +2,7 @@ body {
 
 }
 
-#logout:hover {
+#logout:hover, #adminLogout:hover {
 	cursor: pointer;
 	color: red;
 }
