@@ -3,7 +3,10 @@ $(document).ready(function(){
 	$("#adminLogout").click(function(){adminLogoutButton()});
 	var studentID = $(".nameHeader").attr("id");
 	console.log(studentID);
+	//Recognize a particular ticket as belonging to the currently logged-in student
 	registerUserTicket($(".ticket"+studentID));
+	//Set up the tickets so the admins can deal with them (help or remove them from the queue)
+	registerAdminTickets();
 });
 
 var logoutButton = function(){
@@ -23,6 +26,7 @@ var adminLogoutButton = function(){
 		});
 }
 
+//Adds a link to the ticket belonging to the current user so they can remove it from the queue.
 var registerUserTicket = function(ticket){
 	ticket.append("<div id='cancelTicketDiv'>Leave Queue</div>");
 	$("#cancelTicketDiv").click(function(){
@@ -31,5 +35,20 @@ var registerUserTicket = function(ticket){
 				console.log(data);
 				window.location.href = $SCRIPT_ROOT;
 			});
+	});
+}
+
+var registerAdminTickets = function(){
+	$(".adminTicket").each(function(index){
+		var elem = $("<div id='cancelTicketDiv'>Remove from queue</div>");
+		$(this).append(elem);
+		var ticketID = $(this).attr('id');
+		elem.click(function(){
+			$.post($SCRIPT_ROOT + '/removeTicket', {ticketID: ticketID}, 
+			function(data){
+				console.log(data);
+				window.location.href = $SCRIPT_ROOT;
+			});
+		});
 	});
 }

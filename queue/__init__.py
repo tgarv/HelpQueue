@@ -26,13 +26,15 @@ def index():
                 return render_template('newTicket.html', tickets=get_tickets(),
                                        name=session['name'],
                                        studentID=session['studentID'],
-                                       queue=get_queue_title())
+                                       queue=get_queue_title(),
+                                       teachers=get_teachers())
             else:
                 print str(session)
                 return render_template('queue.html', tickets=get_tickets(),
                                        name=session['name'],
                                        studentID=session['studentID'],
-                                       queue=get_queue_title())
+                                       queue=get_queue_title(),
+                                       teachers=get_teachers())
     ##Exception caught if session['logged_in'] not defined
     except KeyError as e:
         print "Error: ", e
@@ -133,12 +135,18 @@ def get_queue_location(queueID):
 def get_tickets():
     query = "select * from tickets where queueID = %s"
     rows = execute_query(query, [QUEUE_ID])
-    print get_student_name_from_id(31)
     return [dict(ticketID=row[0], studentID=row[5],
-                 name=get_student_name_from_id(row[5])) for row in rows]
+                 name=get_student_name_from_id(row[5]),
+                 description=row[3]) for row in rows]
     
 
 def waiting_for_ticket():
+    query = "select * from tickets where queueID=%s and studentID=%s"
+    rows = execute_query(query, [QUEUE_ID, session['studentID']])
+    if len(rows) > 0:
+        session['waiting'] = True
+    else:
+        session['waiting'] = False
     return session['waiting']
 
 def do_login(name, location):
@@ -151,6 +159,8 @@ def do_login(name, location):
     return redirect(url_for('index'))
 
 def do_logout():
+    query = "delete from students where studentID=%s"
+    execute_query(query, [session['studentID']])
     session['logged_in'] = False
     session['name'] = None
     session['studentID'] = None
@@ -166,7 +176,10 @@ def do_remove_ticket(ticketID):
 def get_student_name_from_id(studentID):
     query = "select name from students where studentID=%s"
     row = execute_query(query, [studentID])
-    return row[0][0]
+    try:
+        return row[0][0]
+    except IndexError:
+        return "Null"
 
 def do_admin_login(name, password, location):
     query = "select password from queues where queueID=%s"
@@ -184,6 +197,8 @@ def do_admin_login(name, password, location):
     return redirect(url_for('admin'))
 
 def do_admin_logout():
+    query = "delete from teachers where teacherID=%s"
+    execute_query(query, [session['adminID']])
     session['admin_logged_in'] = False
     session['name'] = None
     session['adminID'] = None
@@ -192,3 +207,8 @@ def do_admin_logout():
 
 def helping_ticket():
     return session['helping_ticket']
+
+def get_teachers():
+    query = "select * from teachers where queueID=%s"
+    rows = execute_query(query, [QUEUE_ID])
+    return [dict(name=row[2], location=row[3], helping=row[4]) for row in rows]
