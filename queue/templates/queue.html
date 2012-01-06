@@ -19,21 +19,22 @@
 	</div>
 
 	<div id="displayTicketsDiv">
+		{{queue}}
 		<ul id="displayTicketsList">
 			{% for ticket in tickets %}
 				<li id="{{ticket.ticketID}}" class="ticket{{ticket.studentID}}">{{ticket.name}}</li>
 			{% else %}
-			<li>Nobody is on the queue!</li>
+			<li class="noTickets">Nobody is on the queue!</li>
 			{% endfor %}
 		</ul>
 	</div>
 	<div id="displayTeachersDiv">
-		People helping the queue:
+		Staff in lab:
 		<ul id="displayTeachersList">
 			{% for teacher in teachers %}
 				<li class="teacher">{{teacher.name}}--{{teacher.location}}</li>
 			{% else %}
-			<li>Nobody is helping :(</li>
+			<li>Nobody is here :(</li>
 			{% endfor %}
 		</ul>
 	</div>

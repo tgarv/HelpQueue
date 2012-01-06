@@ -17,12 +17,16 @@
 		</div>
 	</div>
 	<div id="displayTicketsDiv">
-		Queue
+		{{queue}}
 		<ul id="displayTicketsList">
 			{% for ticket in tickets %}
-				<li id="{{ticket.ticketID}}" class="ticket{{ticket.studentID}} adminTicket">{{ticket.name}} -- {{ticket.description}}</li>
+				<li id="{{ticket.ticketID}}" class="ticket{{ticket.studentID}} adminTicket">
+					<div class="adminTicketBody">{{ticket.name}} -- {{ticket.description}}</div>
+					<div class="adminTicketExpand">{{ticket.location}}</div>
+					<div class="adminTicketDelete"></div>
+				</li>
 			{% else %}
-			<li>Nobody is on the queue!</li>
+			<li class="noTickets">Nobody is on the queue!</li>
 			{% endfor %}
 		</ul>
 	</div>

@@ -84,10 +84,10 @@ def admin():
         else:
             if not helping_ticket():
                 return render_template('adminQueue.html', tickets=get_tickets(),
-                                       queue=get_queue_title(), name=session['name'])
+                                       queue=get_queue_title(), name=session['admin_name'])
             else:
                 return render_template('adminTicket.html', tickets=get_tickets(),
-                                       queue=get_queue_title(), name=session['name'])
+                                       queue=get_queue_title(), name=session['admin_name'])
     ##Exception caught if session['admin_logged_in'] not defined
     except KeyError as e:
         print "Error: ", e
@@ -137,7 +137,8 @@ def get_tickets():
     rows = execute_query(query, [QUEUE_ID])
     return [dict(ticketID=row[0], studentID=row[5],
                  name=get_student_name_from_id(row[5]),
-                 description=row[3]) for row in rows]
+                 description=row[3],
+                 location=get_student_location(row[5])) for row in rows]
     
 
 def waiting_for_ticket():
@@ -159,8 +160,8 @@ def do_login(name, location):
     return redirect(url_for('index'))
 
 def do_logout():
-    query = "delete from students where studentID=%s"
-    execute_query(query, [session['studentID']])
+##    query = "delete from students where studentID=%s"
+##    execute_query(query, [session['studentID']])
     session['logged_in'] = False
     session['name'] = None
     session['studentID'] = None
@@ -179,6 +180,7 @@ def get_student_name_from_id(studentID):
     try:
         return row[0][0]
     except IndexError:
+        print "Returning name as Null for student ", studentID
         return "Null"
 
 def do_admin_login(name, password, location):
@@ -192,7 +194,7 @@ def do_admin_login(name, password, location):
     adminID = execute_query_insert(query, "teachers", [QUEUE_ID, name, location])
     session['adminID'] = adminID
     session['admin_logged_in'] = True
-    session['name'] = name
+    session['admin_name'] = name
     session['helping_ticket'] = False
     return redirect(url_for('admin'))
 
@@ -200,7 +202,7 @@ def do_admin_logout():
     query = "delete from teachers where teacherID=%s"
     execute_query(query, [session['adminID']])
     session['admin_logged_in'] = False
-    session['name'] = None
+    session['admin_name'] = None
     session['adminID'] = None
     session['helping_ticket'] = False
     return redirect(url_for('admin'))
@@ -212,3 +214,11 @@ def get_teachers():
     query = "select * from teachers where queueID=%s"
     rows = execute_query(query, [QUEUE_ID])
     return [dict(name=row[2], location=row[3], helping=row[4]) for row in rows]
+
+def get_student_location(studentID):
+    query = "select location from students where studentID=%s"
+    rows = execute_query(query, [studentID])
+    try:
+        return rows[0][0]
+    except IndexError:
+        return "Null"

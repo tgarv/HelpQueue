@@ -6,3 +6,39 @@ body {
 	cursor: pointer;
 	color: red;
 }
+
+#displayTicketsDiv {
+	border: solid black 1px;
+	width: 400px;
+	background: #555555;
+}
+
+#displayTicketsList li {
+	list-style-type: none;
+	display: block;
+	font-size: 20px;
+	margin-top: 10px;
+	background: black;
+	color: white;
+	width: 300px;
+	text-align:center;
+	border: 1px solid black;
+	border-radius: 12px;
+	-moz-border-radius: 12px;
+}
+
+.cancelTicketDiv {
+	color: red;
+	border-top: 1px solid white;
+	border-bottom-left-radius: 12px;
+	border-bottom-right-radius: 12px;
+	-moz-border-bottom-left-radius: 12px;
+	-moz-border-bottom-right-radius: 12px;
+
+}
+
+.cancelTicketDiv:hover {
+	cursor: pointer;
+	background: #262626;
+	border: 1px solid black;
+}

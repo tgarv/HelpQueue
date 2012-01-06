@@ -2,11 +2,11 @@ $(document).ready(function(){
 	$("#logout").click(function(){logoutButton()});
 	$("#adminLogout").click(function(){adminLogoutButton()});
 	var studentID = $(".nameHeader").attr("id");
-	console.log(studentID);
 	//Recognize a particular ticket as belonging to the currently logged-in student
 	registerUserTicket($(".ticket"+studentID));
 	//Set up the tickets so the admins can deal with them (help or remove them from the queue)
 	registerAdminTickets();
+	$(".adminTicketExpand").slideToggle(0);
 });
 
 var logoutButton = function(){
@@ -28,8 +28,8 @@ var adminLogoutButton = function(){
 
 //Adds a link to the ticket belonging to the current user so they can remove it from the queue.
 var registerUserTicket = function(ticket){
-	ticket.append("<div id='cancelTicketDiv'>Leave Queue</div>");
-	$("#cancelTicketDiv").click(function(){
+	ticket.append("<div class='cancelTicketDiv'>Leave Queue</div>");
+	$(".cancelTicketDiv").click(function(){
 		$.post($SCRIPT_ROOT + '/removeTicket', {ticketID: $(ticket).attr('id')}, 
 			function(data){
 				console.log(data);
@@ -39,8 +39,13 @@ var registerUserTicket = function(ticket){
 }
 
 var registerAdminTickets = function(){
+	$(".adminTicketBody").click(function(click){
+		click.stopPropagation();
+		console.log("clicked");
+		$(this).next().slideToggle();
+	});
 	$(".adminTicket").each(function(index){
-		var elem = $("<div id='cancelTicketDiv'>Remove from queue</div>");
+		var elem = $("<div class='cancelTicketDiv'>Remove from queue</div>");
 		$(this).append(elem);
 		var ticketID = $(this).attr('id');
 		elem.click(function(){
