@@ -14,7 +14,7 @@ var logoutButton = function(){
 	$.post($SCRIPT_ROOT + '/logout', {},
 		function(data){
 			//Once the request has been processed, return to the main page (login page)
-			window.location.href = $SCRIPT_ROOT;
+			location.reload();
 		});
 }
 
@@ -22,7 +22,7 @@ var adminLogoutButton = function(){
 	$.post($SCRIPT_ROOT + '/adminLogout', {},
 		function(data){
 			//Once the request has been processed, return to the main page (login page)
-			window.location.href = $SCRIPT_ROOT;
+			location.reload();
 		});
 }
 
@@ -33,7 +33,7 @@ var registerUserTicket = function(ticket){
 		$.post($SCRIPT_ROOT + '/removeTicket', {ticketID: $(ticket).attr('id')}, 
 			function(data){
 				console.log(data);
-				window.location.href = $SCRIPT_ROOT;
+				location.reload();
 			});
 	});
 }
@@ -52,7 +52,7 @@ var registerAdminTickets = function(){
 			$.post($SCRIPT_ROOT + '/removeTicket', {ticketID: ticketID}, 
 			function(data){
 				console.log(data);
-				window.location.href = $SCRIPT_ROOT;
+				location.reload();
 			});
 		});
 	});
