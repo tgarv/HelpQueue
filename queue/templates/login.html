@@ -1,4 +1,19 @@
-<div id="studentLoginDiv">
+<!doctype html>
+<head>
+	<link rel="stylesheet" type="text/css" href="{{url_for('static', filename='style.css')}}"/>
+	<script type="text/javascript" src="{{url_for('static', filename='scripts/jquery.js')}}"></script>
+	<script type="text/javascript" src="{{url_for('static', filename='scripts/jquery-ui.js')}}"></script>
+	<script type="text/javascript" src="{{url_for('static', filename='scripts/scripts.js')}}"></script>
+	<title>Help Queue</title>
+	<script type=text/javascript>
+		$SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+	</script>
+</head>
+<body>
+	<div id="headerDiv">
+		{{queue}}
+	</div>
+	<div id="studentLoginDiv">
 		<form id="studentLoginForm" action="login" method="post">
 			<dl>
 				<dt>Name:
@@ -6,5 +21,7 @@
 				<dt>Location:
 				<dd><input type="text" name="location">
 				<input type="submit" value="submit">
+			</dl>
 		</form>
-</div>
+	</div>
+</body>

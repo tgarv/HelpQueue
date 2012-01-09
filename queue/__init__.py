@@ -20,7 +20,7 @@ app.config.from_object(__name__)
 def index():
     try:
         if not session['logged_in']:
-            return render_template('login.html')
+            return render_template('login.html', queue=get_queue_title())
         else:
             if not waiting_for_ticket():
                 return render_template('newTicket.html', tickets=get_tickets(),
@@ -39,7 +39,7 @@ def index():
     except KeyError as e:
         print "Error: ", e
         traceback.print_exc(file=sys.stdout)
-        return render_template('login.html')
+        return render_template('login.html', queue=get_queue_title())
 
 @app.route('/login', methods=['GET','POST'])
 def login():
@@ -80,7 +80,7 @@ def removeTicket():
 def admin():
     try:
         if not session['admin_logged_in']:
-            return render_template('adminLogin.html')
+            return render_template('adminLogin.html', queue=get_queue_title())
         else:
             if not helping_ticket():
                 return render_template('adminQueue.html', tickets=get_tickets(),
@@ -92,7 +92,7 @@ def admin():
     except KeyError as e:
         print "Error: ", e
         traceback.print_exc(file=sys.stdout)
-        return render_template('adminLogin.html')
+        return render_template('adminLogin.html', queue=get_queue_title())
 
 @app.route('/adminLogin', methods=['POST'])
 def adminLogin():

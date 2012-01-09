@@ -12,14 +12,15 @@
 
 <body>
 	<div id="headerDiv">
-		<div id="navBarDiv">
-			<h3 class="nameHeader" id="{{studentID}}">Welcome {{name}}</h3>
-			<h3 id="logout">Not <em>{{name}}</em>? Click here.</h3>
-		</div>
+		{{queue}}
+	</div>
+	<div id="navBarDiv">
+		<h3 class="nameHeader" id="{{studentID}}">Welcome {{name}}</h3>
+		<h3 id="logout">Log out</h3>
 	</div>
 
 	<div id="displayTicketsDiv">
-		{{queue}}
+		<h3>help queue</h3>
 		<ul id="displayTicketsList">
 			{% for ticket in tickets %}
 				<li id="{{ticket.ticketID}}" class="ticket{{ticket.studentID}}">{{ticket.name}}</li>
