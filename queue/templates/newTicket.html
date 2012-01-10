@@ -24,12 +24,12 @@
 			{% for ticket in tickets %}
 				<li id="{{ticket.ticketID}}" class="ticket{{ticket.studentID}}">{{ticket.name}}</li>
 			{% else %}
-			<li class="noTickets">Nobody is on the queue!</li>
+			<li class="noTickets">Nobody is on the queue</li>
 			{% endfor %}
 		</ul>
 	</div>
 	<div id="addTicketDiv">
-		{{queue}}
+		Add yourself to the Queue!
 		<form id="addTicketForm" action="addTicket" method="post">
 			<dl>
 				<dt>Description of Problem:

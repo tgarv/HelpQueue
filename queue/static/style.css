@@ -35,7 +35,7 @@ body {
 	color: #5e5e5e;
 }
 
-#displayTicketsList li {
+#displayTicketsList li, #displayTeachersList li {
 	list-style-type: none;
 	display: block;
 	font-size: 20px;
@@ -59,4 +59,10 @@ body {
 .cancelTicketDiv:hover {
 	cursor: pointer;
 	background: black;
+}
+
+#displayTeachersDiv {
+	position: absolute;
+	left: 50%;
+	top: 30%;
 }
