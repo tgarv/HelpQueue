@@ -66,3 +66,8 @@ body {
 	left: 50%;
 	top: 30%;
 }
+
+#addTicketDiv {
+	border: solid 1px white;
+	width: 300px;
+}
